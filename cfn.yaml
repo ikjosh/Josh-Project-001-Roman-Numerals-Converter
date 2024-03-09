@@ -4,16 +4,23 @@ Description: |
   The application is to be coded in Python and deployed as a web application with Flask 
   
 Parameters:
+  myKeyPair:
+    Description: Select a KeyPair of your choice
+    Type: AWS::EC2::KeyPair::KeyName
   
+  mySG: 
+    Description: Allows SSH and HTTP
+    Type: AWS::EC2::SecurityGroup::Id
 
 Resources:
   myWebApplication:
     Type: AWS::EC2::Instance
     Properties:
       ImageId: ami-023eb5c021738c6d0
-      KeyName: "String"  #to add
+      InstanceType: t2.micro
+      KeyName: !Ref myKeyPair
       SecurityGroupIds:  # to add
-        SecurityGroupIds
+        - !Ref mySG
       Tags: 
         - Key: Name 
           Value: RomanNumeralsConverter
@@ -22,12 +29,20 @@ Resources:
           #!/bin/bash
           dnf update -y 
           cd /home/ec2-user 
-          dnf install git httpd python3-pip -y 
-          pip3 install Flask
-          git clone 
-          
-
-
+          dnf install git python3-pip -y 
+          git clone https://github.com/ikjosh/Josh-Project-001-Roman-Numerals-Converter.git app 
+          cd app 
+          pip3 install Flask  
+          python3 app.py        
   
   
 Outputs:
+  ApplicationURL:
+    Description: Newly created application URL
+    Value: !Join 
+      - ''
+      - - 'http://'
+        - !GetAtt 
+          - myWebApplication
+          - PublicIp
+    
